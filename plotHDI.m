@@ -5,6 +5,7 @@
 % plotHDI(xAxis, data1, data2, type, grp, alphaLevel, h, data1Name, data2Name, plot1Title, plot2Title)
 % plotHDI(freqs, data1, data2, 'Trimmed mean', 'dependant', 0.05, h, 'condition1', 'condition2', 'ERP (trimmed mean + 95% HDI)', 'Difference between the two conditions'); 
 % 
+% data format:  e.g. frames x participants
 % type: 'Mean', 'Trimmed Mean'
 % grp: 'dependent', or 'independent'
 % alphaLevel: predetermined threshold probability (e.g. 0.05)
