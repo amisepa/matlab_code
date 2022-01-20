@@ -39,7 +39,7 @@ else
     error('Need to add independent method'); %%%%%% ADD INDPT METHOD %%%%%%%
 end
 
-% Dependent vs Independent
+% %%% Yuen t-test %%%
 % if strcmp(grp, 'dependant')
 %     [Ty,CI,diff,se,df,p] = yuend(est1,est2,20,alphaLevel)
 % else
@@ -51,15 +51,15 @@ color1 = [0, 0.4470, 0.7410];           %blue
 color2 = [0.8500, 0.3250, 0.0980];      %red
 color3 = [0.4660, 0.6740, 0.1880];      %green
 
+figure; set(gcf,'Color','w');
 
 %Data1 (mean + 95% HDI)
-figure; set(gcf,'Color','w');
 subplot(2,1,1);
 p1 = plot(xAxis, est1,'LineWidth',2,'Color', color1);
 patch([xAxis fliplr(xAxis)], [HDI1(1,:) fliplr(HDI1(2,:))], ...
     color1,'FaceAlpha',.4,'EdgeColor',color1,'EdgeAlpha',0.9);
-set(gca,'FontSize',12,'layer','top'); 
-grid on; axis tight; hold on; %box on
+% set(gca,'FontSize',12,'layer','top'); 
+% grid on; axis tight; hold on; %box on
 
 %Data2 (mean + 95% HDI)
 hold on;
@@ -69,18 +69,25 @@ patch([xAxis fliplr(xAxis)], [HDI2(1,:) fliplr(HDI2(2,:))], ...
 set(gca,'FontSize',12,'layer','top'); 
 grid on; axis tight; %box on
 % ylabel('MSE','FontSize',12);
+% ylabel('Alpha asymmetry amplitude','FontSize',12);
 title([plot1Title ' (' type ' and 95% HDI)']); 
+% title(plot1Title); 
+% hPlots = flip(findall(gcf,'Type','Line')); % flipped, because the lines are found in reverse order of appearance.
+% legend(hPlots, {data1Name,data2Name}, 'Orientation','vertical'); 
 
-%Difference between data1 and data2 (mean + 95% HDI)
+%Difference (mean + 95% HDI)
 subplot(2,1,2)
-plot(xAxis, est3,'LineWidth',2,'Color', color3);
+p3 = plot(xAxis, est3,'LineWidth',2,'Color', color3);
 patch([xAxis fliplr(xAxis)], [HDI3(1,:) fliplr(HDI3(2,:))], ...
     color3,'FaceAlpha',.4,'EdgeColor',color3,'EdgeAlpha',0.9);
 set(gca,'FontSize',12,'layer','top'); 
 grid on; axis tight; %box on
 % xlabel('Frequency (Hz)','FontSize',12)
-% xlabel('Time (s)','FontSize',12)
-% ylabel('Difference','FontSize',12);
+% xlabel('Time (2-s sliding windows)','FontSize',12)
+% ylabel('MSE Difference','FontSize',12); 
+% xlabel('Scales');
+% ylabel('Amplitude difference','FontSize',12);
+% title([plot1Title ' (' type ' and 95% HDI']); 
 title(['Difference (' type ' and 95% HDI)']); 
 
 %Plot significance bar at the bottom
