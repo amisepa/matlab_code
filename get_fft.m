@@ -41,7 +41,7 @@ epoch = 1;
 %Compute power spectra and cross-spectrum for each sliding window
 for iWind = 1:wSize*sRate:nWind*sRate-wSize*sRate
     p(epoch,:) = 2*dt^2/wSize * fft(data(iWind:iWind+wSize*sRate-1)).*conj(fft(data(iWind:iWind+wSize*sRate-1)));
-    p_sd(epoch,:) = std(p(epoch,:))
+    p_sd(epoch,:) = std(p(epoch,:));
     epoch = epoch+1;
 end
 
