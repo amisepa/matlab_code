@@ -66,8 +66,8 @@ hold on;
 p2 = plot(xAxis, est2,'LineWidth',2,'Color', color2);
 patch([xAxis fliplr(xAxis)], [HDI2(1,:) fliplr(HDI2(2,:))], ...
     color2,'FaceAlpha',.4,'EdgeColor',color2,'EdgeAlpha',0.9);
-set(gca,'FontSize',12,'layer','top'); 
-grid on; axis tight; %box on
+% set(gca,'FontSize',12,'layer','top'); 
+% grid on; axis tight; %box on
 % ylabel('MSE','FontSize',12);
 title([plot1Title ' (' type ' and 95% HDI)']); 
 
