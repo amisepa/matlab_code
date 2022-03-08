@@ -1,10 +1,14 @@
 %Displays all channels and 2 min of data (30 s sections)
 %Check bad channels to tag them as bad for rejection
-%badChan = tag_badChannels(EEG)
+% 
+% Usage: badChan = tag_badChannels(EEG)
+% 
+% Cedric Cannard, 2020
 
 function badChan = tag_badChannels(EEG)
 
 disp(['File length: ' num2str(EEG.xmax)]);
+
 if EEG.xmax < 61
     badChan = true(1,4);
     cprintf('blue', 'File too short, skipping to next file \n');

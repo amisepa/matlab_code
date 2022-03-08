@@ -28,6 +28,9 @@ fNQ = 1/dt/2;   %Nyquist frequency
 f = df:df:fNQ;  %whole frequency vector availabe in data
 
 %check frequency vector    
+if fInt(1)<1
+    error('Minimum frequency should be 1 Hz.');
+end
 if fInt(end)> f(end)
     warning('Upper frequency bound selected is above the Nyquist limit. Changing to Nyquist frequency.');
     fInt = fInt(1):f(end);
