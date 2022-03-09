@@ -27,10 +27,10 @@ s4 = axes('unit', 'normalized', 'position' , [0.05 0.05 0.7 0.2]);
 s5 = axes('unit', 'normalized', 'position' , [0.77 0.6 0.21 0.4]);
 % end
 
-EEG = clean_drifts(EEG,[0.25 0.75]);   
-EEG = pop_eegfiltnew(EEG, 'hicutoff',45,'plotfreqz',0);
+% EEG = clean_drifts(EEG,[0.25 0.75]);   
+% EEG = pop_eegfiltnew(EEG, 'hicutoff',45,'plotfreqz',0);
 standDev = std(EEG.data, [], 2);
-EEG.data = bsxfun(@rdivide, bsxfun(@minus, EEG.data, mean(EEG.data,2)), standDev);
+EEG.data = bsxfun(@rdivide, bsxfun(@minus, EEG.data, mean(EEG.data,2)), standDev*3);
 EEG.data = bsxfun(@plus, EEG.data, [12 8 4 0]');
 
 % Plot EEG.data in each axe:
@@ -55,5 +55,7 @@ waitfor(nextButton, 'userdata');
 badChan = logical([chan1.Value chan2.Value chan3.Value chan4.Value]);
 % badChan = {EEG.chanlocs(badChan).labels};
 % close(f);
+
+disp('Bad channels tagged.')
 
 end

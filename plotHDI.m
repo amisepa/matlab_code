@@ -51,7 +51,6 @@ color1 = [0, 0.4470, 0.7410];           %blue
 color2 = [0.8500, 0.3250, 0.0980];      %red
 color3 = [0.4660, 0.6740, 0.1880];      %green
 
-
 %Data1 (mean + 95% HDI)
 figure; set(gcf,'Color','w');
 subplot(2,1,1);
