@@ -44,8 +44,9 @@ end
 
 %plot bars
 if size(seg,2) == 2
+    xSize = diff(f(1:2));
     for i = 1:size(seg,1)
 %         hold on; plot([seg(i,1)-0.5 seg(i,2)+0.5],[min(ylim)+0.5 min(ylim)+0.5],'k','LineWidth',3);
-        hold on; plot([seg(i,1)-0.1 seg(i,2)+0.1],[min(ylim)+0.0001 min(ylim)+0.0001],'k','LineWidth',3);
+        hold on; plot([seg(i,1)-xSize/2 seg(i,2)+xSize/2],[min(ylim)+0.00001 min(ylim)+0.00001],'k','LineWidth',3);
     end
 end

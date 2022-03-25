@@ -11,6 +11,10 @@
 
 function plotDiff(xAxis, data1, data2, h, data1Name, data2Name)
 
+if size(xAxis,1)>size(xAxis,2)
+    xAxis = xAxis';
+end
+
 color1 = [0, 0.4470, 0.7410];
 color2 = [0.8500, 0.3250, 0.0980];
 
@@ -28,7 +32,7 @@ data2_se = std(data2,[],2,'omitnan') ./ sqrt(nSubj)';      %Standard error
 data2_t = tinv([.025 .975],nSubj-1);  %t-score
 data2_CI = data2_mean' + (-data2_t.*data2_se)';
 
-figure; set(gcf,'Color','w');
+% figure; set(gcf,'Color','w');
 
 %Data1 (mean + 95% CI)
 p1 = plot(xAxis,data1_mean,'LineWidth',2,'Color', color1);
