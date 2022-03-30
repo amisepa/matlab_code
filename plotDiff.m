@@ -24,9 +24,7 @@ data1_se = std(data1,[],2,'omitnan') ./ sqrt(nSubj)';      %Standard error
 data1_t = tinv([.025 .975],nSubj-1);  %t-score
 data1_CI = data1_mean' + (-data1_t.*data1_se)';
 
-if size(data2,2) ~= size(data1,2)
-    nSubj = size(data2,2);
-end
+nSubj = size(data2,2);
 data2_mean = mean(data2,2,'omitnan');
 data2_se = std(data2,[],2,'omitnan') ./ sqrt(nSubj)';      %Standard error
 data2_t = tinv([.025 .975],nSubj-1);  %t-score

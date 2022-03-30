@@ -45,7 +45,7 @@ overlap = winSize/(100/overlap); %get overlap in samples
 
 % Frequency range default
 if ~exist('fRange', 'var') || isempty(fRange)
-    fRange = [1 Fs/2];     %1 Hz for the min and Nyquist (srate/2) for the max. 
+    fRange = [0 Fs/2];     %1 Hz for the min and Nyquist (srate/2) for the max. 
 end
 
 % % Power type default
