@@ -46,8 +46,8 @@ end
 if size(seg,2) == 2
     xSize = diff(f(1:2));
     for i = 1:size(seg,1)
-%         hold on; plot([seg(i,1)-xSize/5 seg(i,2)+xSize/5],[min(ylim)+0.00001 min(ylim)+0.00001],'k','LineWidth',3);
+        hold on; plot([seg(i,1)-xSize/10 seg(i,2)+xSize/10],[min(ylim)+0.00001 min(ylim)+0.00001],'k','LineWidth',3);
 %         hold on; plot([seg(i,1)-xSize/2 seg(i,2)+xSize/2],[min(ylim)+0.00001 min(ylim)+0.00001],'k','LineWidth',3);
-        hold on; plot([seg(i,1)-xSize seg(i,2)+xSize/2],[min(ylim)+0.00001 min(ylim)+0.00001],'k','LineWidth',3);
+%         hold on; plot([seg(i,1)-xSize seg(i,2)+xSize/2],[min(ylim)+0.00001 min(ylim)+0.00001],'k','LineWidth',3);
     end
 end

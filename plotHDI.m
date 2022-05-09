@@ -24,7 +24,7 @@ else
     sigBars = false;
 end
 
-%remove unecesary dimensions if any
+%remove unnecessary dimensions if any
 % if length(size(data1)) > 2 && size(data1,1) == 1
 %     data1 = squeeze(data1);
 %     data2 = squeeze(data2);
@@ -40,7 +40,7 @@ else
 end
 
 % Dependent vs Independent
-% if strcmp(grp, 'dependant')
+% if strcmp(grp, 'dependent')
 %     [Ty,CI,diff,se,df,p] = yuend(est1,est2,20,alphaLevel)
 % else
 %     [Ty,diff,CI,da,db,df,p] = yuen(est1,est2,20,alphaLevel)

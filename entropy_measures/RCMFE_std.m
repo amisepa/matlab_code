@@ -35,7 +35,7 @@ x = x./std(x);
 
 Out_RCMFE=NaN*ones(1,Scale);
 
-parfor i=2:Scale
+for i=2:Scale
     temp_A=[];
     temp_B=[];
     for ii=1:i

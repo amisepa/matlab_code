@@ -4,8 +4,7 @@
 % Usage:
 %       plotDiff(xAxis, data1, data2, h, data1Name, data2Name)
 % 
-% Data must be 2-D. Subjects in column 2 and values in column 2 (e.g.,
-% freqs x subjects)
+% Data must be 2-D. Values in column 1 and subjects in column 2 (e.g.,freqs x subjects)
 % 
 % Cedric Cannard, 2021
 
@@ -15,6 +14,9 @@ if size(xAxis,1)>size(xAxis,2)
     xAxis = xAxis';
 end
 
+if length(h) ~= length(xAxis)
+    error('x-axis and h have different length.');
+end
 color1 = [0, 0.4470, 0.7410];
 color2 = [0.8500, 0.3250, 0.0980];
 

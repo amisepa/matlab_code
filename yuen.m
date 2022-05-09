@@ -1,6 +1,6 @@
-function [Ty,diff,CI,da,db,df,p] = yuen(a,b,percent,alpha)
-
-% Computes Ty (Yuen's T statistic)
+% function [Ty,diff,CI,da,db,df,p] = yuen(a,b,percent,alpha)
+% 
+% % Computes Ty (Yuen's T statistic)
 % Ty=(tma-tmb) / sqrt(da+db), where tma & tmb are trimmed means of a & b,
 % and da & db are yuen's estimate of the standard errors of tma & tmb.
 % Ty is distributed approximately as Student's t with estimated degrees of freedom, df.
@@ -18,6 +18,9 @@ function [Ty,diff,CI,da,db,df,p] = yuen(a,b,percent,alpha)
 % Original code by Prof. Patrick J. Bennett, McMaster University
 % Added CI output, various editing, GAR, University of Glasgow, Dec 2007
 % See also YUEND
+
+function [Ty,diff,CI,da,db,df,p] = yuen(a,b,percent,alpha)
+
 
 if nargin<4
     alpha=.05;

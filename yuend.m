@@ -1,4 +1,4 @@
-% function [Ty,CI,diff,se,df,p] = yuend(a,b,percent,alpha)
+% function [Ty,diff,CI,se,df,p] = yuend(a,b,percent,alpha)
 %
 % Computes Ty (Yuen's T statistic) for two dependent groups.
 % 
@@ -27,7 +27,7 @@
 %
 % See also YUEN 
 
-function [Ty,CI,diff,se,df,p] = yuend(a,b,percent,alpha)
+function [Ty,diff,CI,se,df,p] = yuend(a,b,percent,alpha)
 
 if nargin < 4
     alpha =.05;
