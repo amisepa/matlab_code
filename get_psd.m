@@ -70,39 +70,22 @@ end
 %Power spectral density (PSD)
 % disp('computing power spectral density (PSD) for each channel...');
 for iChan = 1:size(eegData,1)
-%     [pxx(:,iChan), f] = pwelch(eegData(iChan,:), window, overlap, 1:fRange(end), Fs, type);
     [pxx(iChan,:), f] = pwelch(eegData(iChan,:),fh(winSize),overlap,nfft,Fs,type);
 %     [pxx(:,iChan), f, c] = pwelch(eegData(iChan,:), window, overlap, [], Fs, type);
-%     [pxx(:,iChan), f] = pwelch(data(iChan,:), window, overlap, nfft, Fs);
 end
 
 %Calculate frequency resolution
 % exp_tlen = nextpow2(tlen);
 % fres = Fs/2.^exp_tlen;
 
-freq = dsearchn(f, fRange(1)):dsearchn(f, fRange(2));
-f = f(freq);
-pxx = pxx(:,freq);     % truncate PSD to frex range
-% pxx = 10*log10(pxx);    %normalize to dB
+% Truncate PSD to frequency range of interest (ignore freq 0)
+freq = dsearchn(f,fRange(1)):dsearchn(f, fRange(2));
+f = f(freq(2:end));
+pxx = pxx(:,freq(2:end));     
+f = f';
 
-% freqs = round(f)>=fRange(1) & round(f)<=fRange(end);  %get correct frequencies
-% power = 10*log10(pxx(f,:))';      %Convert to dB and keep only freqs of interest
-% psd = log(pxx(freqs,:))';         %Convert to natural log (better for differenciation)
-% c = 10*log10(c(freqs,:))';        %confidence bounds
-% freqs(freqs == 0) = [];
-% freqs = find(freqs);
-
-% psd = pxx(freqs,:);
-% figure; plot(freqs, psd);hold on; plot(freqs,log(psd));hold on; plot(freqs, 10*log10(psd));
-% legend('psd', 'log', 'dB', 'power');
-
-% Frequencies in Welch's estimate where the lower confidence bound exceeds 
-% the upper confidence bound for surrounding frequencies clearly indicate 
-% significant oscillations in the time series.Default is 95% confidence bounds
-% color1 = [0, 0.4470, 0.7410];          
-% figure; set(gcf,'Color','w');
-% plot(freqs', psd,'LineWidth',2,'Color',color1); hold on;
-% fillhandle = fill([freqs' fliplr(freqs')],[c(1,:) fliplr(c(2,:))], color1);
-% set(fillhandle,'EdgeColor', color1,'FaceAlpha',0.3,'EdgeAlpha',0.8);
+%Normalize to deciBels (dB)
+pxx = 10*log10(pxx);
+disp('Power spectrum normalized to dB!')
 
 end

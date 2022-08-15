@@ -30,11 +30,11 @@ end
 % end
 
 %COMPUTE HDI
-if strcmp(grp, 'dependant') %%%%%%% PAIRED METHOD ONLY %%%%%%%%%%%%%
+if strcmp(grp, 'dependent') %%%%%%% PAIRED METHOD ONLY %%%%%%%%%%%%%
     [est1, HDI1] = computeHDI(data1, type, 1-alphaLevel);
     [est2, HDI2] = computeHDI(data2, type, 1-alphaLevel);
 else
-    error('Need to add independant method'); %%%%%% ADD INDPT METHOD %%%%%%%
+    error('Need to add independent method'); %%%%%% ADD INDPT METHOD %%%%%%%
 end
 
 %Colors

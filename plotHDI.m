@@ -54,7 +54,7 @@ color3 = [0.4660, 0.6740, 0.1880];      %green
 %Data1 (mean + 95% HDI)
 figure; set(gcf,'Color','w');
 subplot(2,1,1);
-p1 = plot(xAxis, est1,'LineWidth',2,'Color', color1);
+p1 = plot(xAxis,est1,'LineWidth',2,'Color', color1);
 patch([xAxis fliplr(xAxis)], [HDI1(1,:) fliplr(HDI1(2,:))], ...
     color1,'FaceAlpha',.4,'EdgeColor',color1,'EdgeAlpha',0.9);
 set(gca,'FontSize',12,'layer','top'); 
@@ -68,7 +68,8 @@ patch([xAxis fliplr(xAxis)], [HDI2(1,:) fliplr(HDI2(2,:))], ...
 % set(gca,'FontSize',12,'layer','top'); 
 % grid on; axis tight; %box on
 % ylabel('MSE','FontSize',12);
-title([plot1Title ' (' type ' and 95% HDI)']); 
+% title([plot1Title ' (' type ' and 95% HDI)']); 
+title(plot1Title); 
 
 %Difference between data1 and data2 (mean + 95% HDI)
 subplot(2,1,2)

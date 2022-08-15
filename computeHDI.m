@@ -35,13 +35,13 @@ end
 
 % compute the estimator
 if strcmpi(estimator,'Mean')
-    est = mean(Y,2);
+    est = mean(Y,2,'omitnan');
 elseif strcmpi(estimator,'Trimmed mean')
-    est = limo_trimmed_mean(Y,20); % default 20% trimmed mean
+    est = limo_trimmed_mean(Y,15); % default 20% trimmed mean
 elseif strcmpi(estimator,'HD')
     est = limo_harrell_davis(Y,.5); % default to estimation of the 5th decile
 elseif strcmpi(estimator,'Median')
-    est = median(Y,2);
+    est = median(Y,2,'omitnan');
 end
 
 % sample with replacement from Dirichlet
@@ -55,13 +55,13 @@ for boot = 1:Nb % bootstrap loop
     
     % compute the estimator
     if strcmpi(estimator,'Mean')
-        bb(:,boot) = mean(resample,2);
+        bb(:,boot) = mean(resample,2,'omitnan');
     elseif strcmpi(estimator,'Trimmed Mean')
-        bb(:,boot) = limo_trimmed_mean(resample,20); 
+        bb(:,boot) = limo_trimmed_mean(resample,15); 
     elseif strcmpi(estimator,'HD')
         bb(:,boot) = limo_harrell_davis(resample,.5); 
     elseif strcmpi(estimator,'Median')
-        bb(:,boot) = median(resample,2);
+        bb(:,boot) = median(resample,2,'omitnan');
     end
 end
 
