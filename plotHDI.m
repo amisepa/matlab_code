@@ -2,7 +2,7 @@
 % using Bayesian bootstrap. Adapted from LIMO-EEG tools
 % 
 % Usage:
-% plotHDI(xAxis, data1, data2, type, grp, aLevel, h, data1Name, data2Name, plot1Title)
+% plotHDI(xAxis, data1, data2, type, grp, alphaLevel, h, data1Name, data2Name, plot1Title)
 % plotHDI(freqs, data1, data2, 'Trimmed mean', 'dependent', .05, h, 'condition1', 'condition2', 'Power spectrum (trimmed mean + 95% HDI)'); 
 
 % data format:  e.g. frames x participants
@@ -47,9 +47,9 @@ end
 % end
 
 %Colors
-color1 = [0, 0.4470, 0.7410];           %blue
-color2 = [0.8500, 0.3250, 0.0980];      %red
-color3 = [0.4660, 0.6740, 0.1880];      %green
+color1 = [0, 0.4470, 0.7410];           % blue
+color2 = [0.8500, 0.3250, 0.0980];      % red
+color3 = [0.4660, 0.6740, 0.1880];      % green
 
 %Data1 (mean + 95% HDI)
 figure; set(gcf,'Color','w');
