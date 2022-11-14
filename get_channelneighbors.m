@@ -22,7 +22,7 @@ cfg  = rmfield(cfg, 'label');     % first input must not be data
 data = rmfield(data, 'method');   % second input must not be method
 
 % neighbors = ft_prepare_neighbours(cfg, data); %%% TO EXTRACT
-cfg.feedback = 'no';
+% cfg.feedback = 'no';
 cfg.channel  = 'all';
 cfg.compress = 'yes';
 cfg.parcellation = 'parcellation';
