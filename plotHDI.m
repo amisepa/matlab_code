@@ -18,7 +18,7 @@ function plotHDI(xAxis, data1, data2, type, grp, alphaLevel, h, data1Name, data2
  
 fprintf('Computing Bayesian bootstrap for HDI estimation... \n')
 
-if exist('h', 'var') || ~isempty(h)
+if exist('h', 'var') && ~isempty(h)
     sigBars = true;
 else
     sigBars = false;
