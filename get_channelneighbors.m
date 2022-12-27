@@ -9,6 +9,9 @@
 
 function [neighbors, channeighbstructmat] = get_channelneighbors(chanlocs,vis)
 
+tmppath = fileparts(which('compute_mcc.m'));
+addpath(fullfile(tmppath, 'subfunctions'))
+
 cfg.elec.elecpos(:,1) = [ chanlocs.X ];
 cfg.elec.elecpos(:,2) = [ chanlocs.Y ];
 cfg.elec.elecpos(:,3) = [ chanlocs.Z ];

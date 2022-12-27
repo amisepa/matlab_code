@@ -86,6 +86,6 @@ f = f';
 
 %Normalize to deciBels (dB)
 pxx = 10*log10(pxx);
-disp('Power spectrum normalized to dB!')
+%disp('Power spectrum normalized to dB!')
 
 end
