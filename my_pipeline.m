@@ -62,24 +62,32 @@ for iSub = 1%:5%13
         % CSD-transformation
 %         EEG = csd_transform(EEG,chanlocfile);
 
-        % Remove bad channels 
+        % Detect flat channels
+        maxFlat = 10;   % max flat segment tolerated in s (default = 5)
+        maxJitter = 20; % max jitter tolerated during flatlines (as a multiple of epsilon; default - 20)
         oriEEG = EEG;
-%     EEG = clean_flatlines(EEG,5,20);
-%     corrThresh = .8;       % correlation threshold (default = .85)
-%     lineThresh = 5;         % line noise threshold (default = 4)
-%     winLength = 10;          % length of windows (in s) to compute corrThresh (default = 5)
-%     brokenTime = 0.15;      % max time (fraction of recording) of broken channel (0.1-0.6) 
-%     nSamples = 100;         % number of ransac samples to generate random sampling 
-%     %                       consensus (in s; default = 50; higher is more robust but longer)
-%     [EEG, rmchans] = clean_channels(EEG,corrThresh,lineThresh,winLength,brokenTime,nSamples); 
+        badchannels = false(1,EEG.nbchan);
+        for ichan = 1:EEG.nbchan
+            zero_intervals = reshape(find(diff([false abs(diff(EEG.data(ichan,:)))<(maxJitter*eps) false])),2,[])';
+            if max(zero_intervals(:,2) - zero_intervals(:,1)) > maxFlat*EEG.srate
+                badchannels(ichan) = true; 
+            end
+        end
+        
+        %  Using clean_channels (correlation to its robust random estimate)
+        minCorr = 0.8;      % minimum correlation between channels (default = .85)
+        lineThresh = 5;     % line noise threshold (default = 4)
+        winLength = 10;     % length of windows (in s) to compute corrThresh (default = 5)
+        brokenTime = 0.33;  % max time (fraction of recording) of broken channel (0.1-0.6)
+        nSamples = 100;     % ransac samples to generate random sampling consensus (in s; default = 50; higher is more robust but longer)
+        [cleanEEG, rmchans] = clean_channels(EEG,minCorr,lineThresh,winLength,brokenTime,nSamples);
 %     badChans = { oriEEG.chanlocs(rmchans).labels };
 %     if EEG.nbchan < 59
 %         error('More than 5 channels removed!')
 %     end
 %     vis_artifacts(EEG,oriEEG);
 % %     idx = ~contains({oriEEG.chanlocs.labels}, {EEG.chanlocs.labels});
-% %     rmchans = {oriEEG.chanlocs(idx).labels};
-        sInfo2(counter1).badChans = {oriEEG.chanlocs(chanIdx).labels};
+        sInfo2(counter1).badChans = {oriEEG.chanlocs(idx).labels};
 %         toc(t)
         EEG = eeg_checkset(EEG);
 %         EEG = pop_interp(EEG, oriEEG.chanlocs, 'spherical'); % interpolate
