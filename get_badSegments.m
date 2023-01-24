@@ -3,7 +3,8 @@
 % 
 % Inputs:
 %   - mask: array of zeros (good sample) and ones (bad samples)
-%   - art_zise: minimum size of artifactiual segment to be considered artifact
+%   - art_zise: minimum size of artifactiual segment to be considered
+%   artifact (e.g., .1 * EEG.srate for 100 ms)
 % 
 % Cedric Cannard, 2022
 
