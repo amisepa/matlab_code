@@ -2,15 +2,20 @@
 % separating them is very small to reduce number of discontinuities.
 % 
 % Inputs:
-%   - mask: array of zeros (good sample) and ones (bad samples)
-%   - art_zise: minimum size of artifactiual segment to be considered
-%   artifact (e.g., .1 * EEG.srate for 100 ms)
+%   - clean EEG structure
+%   - raw EEG structure
+% 
+% Output:
+%   - bad data segments
 % 
 % Cedric Cannard, 2022
 
-function out = get_badSegments(mask, art_size)
+function [bad_data, mask] = get_badSegments(newEEG,oldEEG)
 
-out = reshape(find(diff([false mask false])),2,[])';
-out(:,2) = out(:,2)-1;
-dur = out(:,2) - out(:,1);
-out(dur<art_size,:) = [];
+% Portion of data which have changed
+mask = sum(abs(oldEEG.data-newEEG.data),1) < 1e-10;
+mask = ~mask;
+
+% Latency bounds of bad segments
+bad_data = reshape(find(diff([false mask false])),2,[])';
+bad_data(:,2) = bad_data(:,2)-1;
