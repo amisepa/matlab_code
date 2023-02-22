@@ -75,7 +75,7 @@ for iSub = 1%:5%13
         end
         
         %  Using clean_channels (correlation to its robust random estimate)
-        minCorr = 0.8;      % minimum correlation between channels (default = .85)
+        minCorr = 0.3;      % minimum correlation between channels (default = .85)
         lineThresh = 5;     % line noise threshold (default = 4)
         winLength = 10;     % length of windows (in s) to compute corrThresh (default = 5)
         brokenTime = 0.33;  % max time (fraction of recording) of broken channel (0.1-0.6)
@@ -96,7 +96,6 @@ for iSub = 1%:5%13
 
         % Remove large artifacts
         cutoff = 40;          % variance threshold (2-80)
-        reconstruct = false;
         useriemannian = false;
         usegpu = false;
         m = memory;
@@ -107,6 +106,7 @@ for iSub = 1%:5%13
 %               'BurstRejection',~reconstruct,'BurstCriterion',cutoff, 'MaxMem',maxmem);
 
         % Remove segments from data 
+        reconstruct = false;
         if reconstruct
             EEG = cleanEEG;
         else
@@ -118,7 +118,8 @@ for iSub = 1%:5%13
             badData = reshape(find(diff([false mask false])),2,[])';
             badData(:,2) = badData(:,2)-1;
             
-            % check if there are relevant events inside these bad portions
+            % check if there are events inside these bad portions that
+            % should not be removed
             tags = [];
             evLats = [EEG.event.latency];
             for iSeg = 1:size(badData,1)
@@ -138,6 +139,39 @@ for iSub = 1%:5%13
 
         end
         EEG = eeg_checkset(EEG);
+    
+        %%%%%%%%%%%%% CODE FOR VISUALIZING SEGMENTS REMOVED MANUALLY BEFORE
+        %%%%%%%%%%%%% REMOVING THEM (instead of reconstructed by clean_asr) 
+        % Reject bad data manually
+        eegplot(EEG2.data,'winlength',15,'srate',EEG2.srate,'spacing',150, ...
+            'command','[TMPEEG, com] = eeg_eegrej(EEG2,eegplot2event(TMPREJ,-1));');
+
+        % get latency bounds of the removed segments
+        reply = input("DONE CLEANING (y/n)?", 's');
+        if strcmpi(reply,'y')
+            if ~isempty(com)
+                badData = extractBetween(com, ',',')');
+                badData = cellfun(@str2num, badData, 'UniformOutput', false);
+                badData = badData{:};
+            else
+                badData = [];
+            end
+        
+            % flatten removed segments on EEG2 (dataset copy)
+            for iSegment = 1:size(badData,1)
+                EEG2.data(:,badData(iSegment,1):badData(iSegment,2)) = 0;
+            end
+
+            % Visualize what you removed (in red)
+            vis_artifacts(EEG2,EEG);
+        end
+
+        % If satisfied, remove the bad segments from the original dataset.
+        reply = input("REMOVE THESE SEGMENTS (y/n)?", 's');
+        if strcmpi(reply,'y')
+            EEG = pop_select(EEG, 'nopoint', badData);
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         % Remove irrecoverable time windows based on power
         disp('Now doing final post-cleanup of the output.');
