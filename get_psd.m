@@ -45,27 +45,19 @@ overlap = winSize/(100/overlap); %get overlap in samples
 
 % Frequency range default
 if ~exist('fRange', 'var') || isempty(fRange)
-    fRange = [0 Fs/2];     %1 Hz for the min and Nyquist (srate/2) for the max. 
+    nyquist = Fs/2;
+    fRange = [1/nyquist nyquist]; 
 end
 
-% % Power type default
-% if ~exist('type', 'var') || isempty(type)
-%     type = 'psd';     %1 Hz for the min and Nyquist (srate/2) for the max. 
-% end
+% Power type default
+if ~exist('type', 'var')
+    type = 'psd';    
+end
 
 %nfft
 if ~exist('nfft', 'var') 
     nfft = [];
 end
-
-% %Detrend data
-% if size(eegData,3) > 1
-%     for iTrial = 1:size(eegData,3)
-%         eegData(:,:,iTrial) = detrend(eegData(:,:,iTrial)')';
-%     end
-% else
-%     eegData = detrend(eegData')';
-% end
 
 %Power spectral density (PSD)
 % disp('computing power spectral density (PSD) for each channel...');
@@ -85,7 +77,7 @@ pxx = pxx(:,freq(2:end));
 f = f';
 
 %Normalize to deciBels (dB)
-pxx = 10*log10(pxx);
-%disp('Power spectrum normalized to dB!')
+% pxx = 10*log10(pxx);
+% disp('Power spectrum normalized to dB!')
 
 end

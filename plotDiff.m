@@ -1,8 +1,10 @@
 % Plots 2 times series, their 95% CI and significance bars at the bottom
-% from h vector (FDR-corrected p-values).
+% from h vector (FDR-corrected p-values). If method is not precised,
+% 10% trimmed mean is used. 
 % 
 % Usage:
-%       plotDiff(xAxis, data1, data2, method, h, data1Name, data2Name)
+%   - plotDiff(xAxis, data1, data2, method, h, data1Name, data2Name);
+%   - plotDiff(freqs, power1, power2, 'mean', [], 'condition 1','condition 2');
 % 
 % Data must be 2-D. Values in column 1 and subjects in column 2 (e.g.,freqs x subjects)
 % 
@@ -27,7 +29,7 @@ n = size(data1,2);
 if strcmpi(method, 'mean')
     data1_mean = mean(data1,2,'omitnan');
 else
-    data1_mean = trimmean(data1,20,2);
+    data1_mean = trimmean(data1,10,2);
 end
 data1_se = std(data1,[],2,'omitnan') ./ sqrt(n)';      %Standard error
 data1_t = tinv([.025 .975],n-1);  %t-score
@@ -65,5 +67,3 @@ if sigBars
 end
 
 legend([p1, p2], {data1Name,data2Name}, 'Orientation','vertical'); 
-
-end
