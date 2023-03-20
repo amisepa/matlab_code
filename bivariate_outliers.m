@@ -47,46 +47,15 @@ end
 
 %% Subfunctions
 
-%CLASSSVD performs the singular value decomposition of a matrix with more
-% rows than columns (uses svd.m)
-%
-% Required input: 
-%          x : data matrix of size n by p where n>p
-%
-% This function is part of LIBRA: the Matlab Library for Robust Analysis,
-% available at: 
-%              http://wis.kuleuven.be/stat/robust.html
-%
-% Written by Sabine Verboven, Mia Hubert
-% Last Update: 06/07/2004
-
-function [P,T,L,r,centerX,cX]=classSVD(x)
-[n,p] = size(x); 
-
-if n==1
-    error('The sample size is 1. No SVD can be performed.')
-end
-cX=mean(x);
-centerX=x-repmat(cX,n,1); 
-[U,S,loadings]=svd(centerX./sqrt(n-1),0); 
-eigenvalues=diag(S).^2;
-tol = max([n p])*eigenvalues(1)*eps;
-r= sum(eigenvalues>tol);
-L=eigenvalues(1:r);
-P=loadings(:,1:r);
-T=centerX*P; 
-
 % Compute the ideal fourths for data in x
 % The estimate of the interquartile range is:
 % IQR=qu-ql;
 % Adapted from Rand Wilcox's idealf R function, described in
 % Rand Wilcox, Introduction to Robust Estimation & Hypothesis Testing, 3rd
 % edition, Academic Press, Elsevier, 2012
-
 % Cyril Pernet & Guillaume Rousselet, v1 - September 2012
 % ---------------------------------------------------
 %  Copyright (C) Corr_toolbox 2012
-
 function [ql,qu]=idealf(x)
 
 j=floor(length(x)/4 + 5/12);
