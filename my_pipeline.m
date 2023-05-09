@@ -32,6 +32,9 @@ EEG = pop_select( EEG,'nochannel',{'initialReference'});
 % CSD-transformation (unclear if ASR and ICA work with these data)
 % EEG = csd_transform(EEG,chanlocfile);
 
+% Re-ref to infinity
+% EEG = reref_inf(EEG);
+
 % Detect flat channels
 maxFlat = 10;   % max flat segment tolerated in s (default = 5)
 maxJitter = 20; % max jitter tolerated during flatlines (as a multiple of epsilon; default - 20)

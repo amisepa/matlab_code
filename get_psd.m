@@ -4,7 +4,7 @@
 % 
 % Usage:
 % [psd, freqs] = get_psd(eeg_data,winSize,taperM,overlap,nfft,Fs,freqRange,type);
-% [psd, freqs] = get_psd(EEG.data,EEG.srate*2,'hamming',50,[],EEG.srate,[1 50],'psd');
+% [psd, freqs] = get_psd(EEG.data,EEG.srate*2,'hamming',50,[],EEG.srate,[1 100],'psd');
 % 
 % - eeg_data with channels in 1st dimension and data in 2nd dimension (default = EEG.data)
 % - window size in frames (default = 2 s window).
@@ -20,18 +20,18 @@
 
 function [pxx, f] = get_psd(eegData,winSize,taperM,overlap,nfft,Fs,fRange,type)
 
-%error if no sampling rate provided
+% Error if no sampling rate provided
 if ~exist('Fs', 'var') || isempty(Fs)
     errordlg('You need to provide the sampling rate Fs to use this function.'); return;
 end
 
-%Window size
+% Window size
 if ~exist('winSize', 'var') || isempty(winSize) 
     disp('Window size not provided: 2-s windows');
     winSize = Fs*2;
 end
 
-%Tapering
+% Taper
 if ~exist('taperM', 'var') || isempty(taperM) 
     taperM = 'hamming'; %hamming (default); hann; blackman; rectwin
 end
@@ -54,30 +54,26 @@ if ~exist('type', 'var')
     type = 'psd';    
 end
 
-%nfft
+% nfft
 if ~exist('nfft', 'var') 
     nfft = [];
 end
 
-%Power spectral density (PSD)
-% disp('computing power spectral density (PSD) for each channel...');
+% Power spectral density (PSD)
 for iChan = 1:size(eegData,1)
     [pxx(iChan,:), f] = pwelch(eegData(iChan,:),fh(winSize),overlap,nfft,Fs,type);
-%     [pxx(:,iChan), f, c] = pwelch(eegData(iChan,:), window, overlap, [], Fs, type);
 end
 
-%Calculate frequency resolution
+% Calculate frequency resolution
 % exp_tlen = nextpow2(tlen);
 % fres = Fs/2.^exp_tlen;
 
 % Truncate PSD to frequency range of interest (ignore freq 0)
 freq = dsearchn(f,fRange(1)):dsearchn(f, fRange(2));
-f = f(freq(2:end));
+f = f(freq(2:end))';
 pxx = pxx(:,freq(2:end));     
-f = f';
 
-%Normalize to deciBels (dB)
-% pxx = 10*log10(pxx);
-% disp('Power spectrum normalized to dB!')
+% Normalize to deciBels (dB)
+pxx = 10*log10(pxx);
 
 end

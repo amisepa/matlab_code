@@ -31,8 +31,9 @@ if strcmpi(method, 'mean')
 else
     data1_mean = trimmean(data1,10,2);
 end
-data1_se = std(data1,[],2,'omitnan') ./ sqrt(n)';      %Standard error
-data1_t = tinv([.025 .975],n-1);  %t-score
+data1_se = std(data1,[],2,'omitnan') ./ sqrt(n)';     % Standard error
+% data1_se = std(data1,[],2,'omitnan');                   % standard deviation
+data1_t = tinv([.025 .975],n-1);  % t-score
 data1_CI = data1_mean' + (-data1_t.*data1_se)';
 
 n = size(data2,2);
@@ -41,7 +42,8 @@ if strcmpi(method, 'mean')
 else
     data2_mean = trimmean(data2,20,2);
 end
-data2_se = std(data2,[],2,'omitnan') ./ sqrt(n)';      %Standard error
+data2_se = std(data2,[],2,'omitnan') ./ sqrt(n)';     % standard error
+% data2_se = std(data2,[],2,'omitnan');                   % standard deviation
 data2_t = tinv([.025 .975],n-1);  %t-score
 data2_CI = data2_mean' + (-data2_t.*data2_se)';
 
@@ -52,7 +54,7 @@ p1 = plot(xAxis,data1_mean,'LineWidth',2,'Color', color1);
 patch([xAxis fliplr(xAxis)], [data1_CI(1,:) fliplr(data1_CI(2,:))], ...
     color1,'FaceAlpha',.4,'EdgeColor',color1,'EdgeAlpha',.7);
 set(gca,'FontSize',12,'layer','top'); 
-grid on; axis tight; hold on; %box on
+hold on;
 
 % Data2 (mean + 95% CI)
 p2 = plot(xAxis,data2_mean,'LineWidth',2,'Color', color2);
@@ -66,4 +68,8 @@ if sigBars
     plotSigBar(h, xAxis);
 end
 
-legend([p1, p2], {data1Name,data2Name}, 'Orientation','vertical'); 
+% legend([p1, p2], {data1Name,data2Name}, 'Orientation','vertical'); 
+
+% grid on; 
+axis tight;  
+box on

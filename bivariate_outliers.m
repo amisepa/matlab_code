@@ -1,15 +1,12 @@
-function flag = bivariate_outliers(X)
+% Finds the bivariate outliers using orthogonal projection to the lines
+% joining the center followed by outlier detection using box plot rule
 
-% routine that find the bivariate outliers using orthogonal projection and
-% box plot rule 
+function flag = bivariate_outliers(X)
 
 % find the centre of the data cloud using mid-covariance determinant
 n   = size(X,1);
 result = mcdcov(X,'cor',1,'plots',0,'h',floor((n+size(X,2)*2+1)/2));
 center = result.center;
-
-% orthogonal projection to the lines joining the center
-% followed by outlier detection using box plot rule
 
 gval = sqrt(chi2inv(0.975,2)); % in fact depends on size(X,2) but here always = 2
 for i=1:n % for each row
