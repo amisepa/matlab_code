@@ -3,8 +3,8 @@
 % 50% overlap, outputting the power spectral density (PSD).
 % 
 % Usage:
-% [psd, freqs] = get_psd(eeg_data,winSize,taperM,overlap,nfft,Fs,freqRange,type);
-% [psd, freqs] = get_psd(EEG.data,EEG.srate*2,'hamming',50,[],EEG.srate,[1 100],'psd');
+% [psd, freqs] = get_psd(eeg_data,winSize,taperM,overlap,nfft,Fs,freqRange,type,vis);
+% [psd, freqs] = get_psd(EEG.data,EEG.srate*2,'hamming',50,[],EEG.srate,[1 100],'psd',1);
 % 
 % - eeg_data with channels in 1st dimension and data in 2nd dimension (default = EEG.data)
 % - window size in frames (default = 2 s window).
@@ -18,7 +18,7 @@
 % 
 % Cedric Cannard, 2021
 
-function [pxx, f] = get_psd(eegData,winSize,taperM,overlap,nfft,Fs,fRange,type)
+function [pwr, pwr_norm, f] = get_psd(eegData,winSize,taperM,overlap,nfft,Fs,fRange,type,vis)
 
 % Error if no sampling rate provided
 if ~exist('Fs', 'var') || isempty(Fs)
@@ -28,7 +28,7 @@ end
 % Window size
 if ~exist('winSize', 'var') || isempty(winSize) 
     disp('Window size not provided: 2-s windows');
-    winSize = Fs*2;
+    winSize = Fs*3;
 end
 
 % Taper
@@ -41,7 +41,7 @@ fh = str2func(taperM);
 if ~exist('overlap', 'var') || isempty(overlap)
     overlap = 50;
 end
-overlap = winSize/(100/overlap); %get overlap in samples
+overlap = winSize/(100/overlap); % convert overlap to samples
 
 % Frequency range default
 if ~exist('fRange', 'var') || isempty(fRange)
@@ -56,12 +56,19 @@ end
 
 % nfft
 if ~exist('nfft', 'var') 
-    nfft = [];
+    nfft = Fs*2;
+end
+
+if vis
+    figure('color','w'); hold on
 end
 
 % Power spectral density (PSD)
 for iChan = 1:size(eegData,1)
-    [pxx(iChan,:), f] = pwelch(eegData(iChan,:),fh(winSize),overlap,nfft,Fs,type);
+    [pwr(iChan,:), f] = pwelch(eegData(iChan,:),fh(winSize),overlap,nfft,Fs,type);
+    if vis
+        plot(f,log10(pwr(iChan,:))); 
+    end
 end
 
 % Calculate frequency resolution
@@ -69,11 +76,12 @@ end
 % fres = Fs/2.^exp_tlen;
 
 % Truncate PSD to frequency range of interest (ignore freq 0)
-freq = dsearchn(f,fRange(1)):dsearchn(f, fRange(2));
-f = f(freq(2:end))';
-pxx = pxx(:,freq(2:end));     
+% freq = dsearchn(f,fRange(1)):dsearchn(f, fRange(2));
+% f = f(freq(2:end))';
+freq = f >= fRange(1) & f <= fRange(2);
+f = f(freq);
+pwr = pwr(:,freq(2:end));     
 
 % Normalize to deciBels (dB)
-pxx = 10*log10(pxx);
+pwr_norm = 10*log10(pwr);
 
-end
