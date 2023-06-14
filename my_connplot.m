@@ -33,7 +33,7 @@ if nargin < 2
 end
 
 radius = 0.5;
-linewidth = 1;
+% linewidth = 1;
 
 g = finputcheck(varargin, { ...
     'labels'      'cell'      { }             {};
@@ -129,8 +129,8 @@ end
 if isempty(g.axis)
     if ~strcmpi(g.brainimg, 'off')
         figure('position', [0 0 400 700])
-    else
-        figure;
+    % else
+        % figure;
     end
 else
     axes(g.axis); hold on;
