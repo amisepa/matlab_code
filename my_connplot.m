@@ -21,9 +21,9 @@
 % Modified by Cedric Cannard, 2023
 % 
 % Test
-% plotconnectivity(rand(4,4), 'labels', { 'Dorso_lateral_prefrontal_cortex' 'Parietal_lobe' 'Thalamus' 'Visual_cortex' }, 'brainimg', 'off');
-% plotconnectivity(rand(8,8), 'brainimg', 'bilateral', 'labels', { 'Dorso_lateral_prefrontal_cortex_L' 'Parietal_lobe_L' 'Thalamus_L' 'Visual_cortex_L' 'Dorso_lateral_prefrontal_cortex_R' 'Parietal_lobe_R' 'Thalamus_R' 'Visual_cortex_R' });
-% plotconnectivity(rand(4,4), 'brainimg', 'bilateral', 'labels', { 'Dorso_lateral_prefrontal_cortex_L' 'Parietal_lobe_L' 'Thalamus_L' 'Visual_cortex_L' });
+% my_connplot(rand(4,4), 'labels', { 'Dorso_lateral_prefrontal_cortex' 'Parietal_lobe' 'Thalamus' 'Visual_cortex' }, 'brainimg', 'off');
+% my_connplot(rand(8,8), 'brainimg', 'bilateral', 'labels', { 'Dorso_lateral_prefrontal_cortex_L' 'Parietal_lobe_L' 'Thalamus_L' 'Visual_cortex_L' 'Dorso_lateral_prefrontal_cortex_R' 'Parietal_lobe_R' 'Thalamus_R' 'Visual_cortex_R' });
+% my_connplot(rand(4,4), 'brainimg', 'bilateral', 'labels', { 'Dorso_lateral_prefrontal_cortex_L' 'Parietal_lobe_L' 'Thalamus_L' 'Visual_cortex_L' });
 
 function limits = my_connplot(array, varargin)
 

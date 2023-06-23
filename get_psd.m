@@ -6,18 +6,19 @@
 % 
 % Usage:
 % [pwr, pwr_norm, f] = get_psd(data,fs,overlap,fRange,vis)
-% [pwr, pwr_norm, f] = get_psd(EEG.data,EEG.srate,.5,[1 100],1);
+% [pwr, pwr_norm, f] = get_psd(EEG.data,EEG.srate,.5,[1 100],4,1);
 % 
 % Inputs:
 %   EEG data    - channels x frames or channels x frames x epochs
 %   fs          - sampling frequency
 %   overlap     - overlapped segment averaging, e.g., .5 for 50% overlap (default)
 %   freqRange   - frequency range to output, e.g. [1 100] (default)
+%   winLength  - window length in s (default = 4)
 %   vis         - visualize (true) or not (false)
 % 
 % Copyright (C) - Cedric Cannard, 2021
 
-function [pwr, pwr_norm, f] = get_psd(data,fs,overlap,fRange,vis)
+function [pwr, pwr_norm, f] = get_psd(data,fs,overlap,fRange,winLength,vis)
 
 % Sampling rate
 if ~exist('fs', 'var') || isempty(fs)
@@ -31,11 +32,14 @@ if length(size(data)) == 2
     disp('Continuous data detected. Converting to continuous to estime PSD with longer overlapping windows.')
 else
     epoched = true;
-    disp('Epoched data detected.')
+    disp('Epoched data detected. Converting them back to continuous.')
+    data = data(:,:);
 end
 
 % Window size
-winLength = 4;   % 2-s window by default
+if ~exist('winLength','var')
+    winLength = 4;   % 4-s window by default
+end
 winSize = fs*winLength;  % in samples
 
 % Taper method: hamming (default), hann, blackman, rectwin.
@@ -62,23 +66,18 @@ end
 % nfft
 if ~exist('nfft', 'var') 
     nfft = winSize;
-    % nfft = [];
 end
 
 fprintf('Estimating %s on frequencies %g-%g Hz using %s-tapered %g-s long windows with %g%% overlap to estimate ... \n', ...
-    upper(type),fRange(1),fRange(2),taperM,winLength,overlap)
+    upper(type),fRange(1),fRange(2),taperM,winLength,overlap*100)
 
 % Power spectral density (PSD)
 nChan = size(data,1);
-for iChan = 1:nChan
-    % convert epoched data to continuous
-    if epoched
-        data = data(:,:);
-    end
-
-    [pwr(iChan,:), f] = pwelch(data(iChan,:),fh(winSize),noverlap,nfft,fs,type);
-
+parfor iChan = 1:nChan
+    [pwr(iChan,:), f(iChan,:)] = pwelch(data(iChan,:),fh(winSize),noverlap,nfft,fs,type);
+    % [pwr(iChan,:), f] = pwelch(data(iChan,:),winSize,[],[],fs,type);
 end
+f = f(1,:);
 
 % Truncate PSD to frequency range of interest (ignore freq 0)
 mask = f >= fRange(1) & f <= fRange(2);

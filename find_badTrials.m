@@ -1,36 +1,31 @@
-%% Scan data to find bad trials using amplitude and high-frequency power 
+%% Scan data to find bad trials using amplitude and high-frequency power
 %
-% INPUT: 
-%   EEG
+% INPUT:
+%   EEG - EEG stucture (EEGLAB)
+%   method  - 'grubbs' (default, more aggressive), 'mean' (more lax)
 %
-% OUTPUT: 
+% OUTPUT:
 %   badTrials
 %
 % Cedric Cannard, Dec 2022
 
-function badTrials = find_badTrials(EEG)
+function badTrials = find_badTrials(EEG,method,vis)
 
-fprintf('Looking for bad trials. This may take a few minutes... \n')
-sigRMS = nan(size(EEG.data,3),1);
-sigPower = nan(size(EEG.data,3),1);
-progressbar('Looking for bad trials')
+disp('Detecting bad trials...')
+b = design_fir(100,[2*[0 45 50]/EEG.srate 1],[1 1 0 0]);
+sigRMS = nan(1,size(EEG.data,3));
+snr = nan(1,size(EEG.data,3));
 for iEpoch = 1:size(EEG.data,3)
-    power = nan(EEG.nbchan,30);
-    sigRMS(iEpoch,:) = rms(rms(EEG.data(:,:,iEpoch)));
-    for iChan = 1:EEG.nbchan
-        [power(iChan,:), f] = get_psd(EEG.data(iChan,:,iEpoch),EEG.srate,'hamming',50,[],EEG.srate,[70 100],'psd');
-    end
-    % hold on; plot(f,mean(power));
-    sigPower(iEpoch,:) = rms(rms(power));  % mean across channels and RMS across frequencies
+    sigRMS(:,iEpoch) = rms(rms(squeeze(EEG.data(:,:,iEpoch)),2));
+    tmp = filtfilt_fast(b,1, squeeze(EEG.data(:,:,iEpoch))');
+    snr(:,iEpoch) = rms(mad(squeeze(EEG.data(:,:,iEpoch)) - tmp'));
+end
+badRMS = isoutlier(sigRMS,method);
+badSNR = isoutlier(snr,method);
+badTrials = unique([find(badRMS) find(badSNR)]);
 
-    progressbar(iEpoch/size(EEG.data,3))
+if vis
+    eegplot(EEG.data(:,:,badTrials),'srate',EEG.srate,'events',EEG.event);
 end
 
-% badAmp = find(sigRMS > 5*std(sigRMS));        % bad epochs based on amplitude
-badAmp = find(isoutlier(sigRMS,'gesd'));        % 'mean' 'median' 'quartiles' 'grubbs' 'gesd' (default)
-% badPow = find(sigPower < 5*std(sigPower));    % bad epochs based on high-frequency power
-badPow = find(isoutlier(sigPower,'mean'));      % 'mean' (more lax) 'median' 'quartiles' 'grubbs' 'gesd'
-
-badTrials = sort(unique([badAmp; badPow]));
-
-gong
+fprintf('Trials detected: %g \n', length(badTrials));
