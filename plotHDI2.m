@@ -1,4 +1,4 @@
-%Computes and plots means and 95% High density intervals (HDI) 
+% Computes and plots trimmed means and 95% High density intervals (HDI) 
 % using Bayesian bootstrap. Adapted from LIMO-EEG tools. 
 % 
 % plotHDI2 only does upper plot, no difference plot below.
@@ -50,9 +50,9 @@ p2 = plot(xAxis, est2,'LineWidth',2,'Color', color2);
 fillhandle = fill([xAxis fliplr(xAxis)],[HDI2(1,:) fliplr(HDI2(2,:))], color2);
 set(fillhandle,'EdgeColor', color2,'FaceAlpha',0.3,'EdgeAlpha',0.8);
 set(gca,'FontSize',12,'layer','top'); 
-grid on; axis tight; %box on
-ylabel('PSD (dB)','FontSize',12);
-xlabel('Frequency (Hz)','FontSize',12);
+grid on; axis tight; box on
+% ylabel('PSD (dB)','FontSize',12);
+% xlabel('Frequency (Hz)','FontSize',12);
 % ylabel('Alpha asymmetry amplitude','FontSize',12);
 % title([plot1Title ' (' type ' and 95% HDI)']); 
 title(plot1Title); 
@@ -65,6 +65,5 @@ if sigBars
 end
 
 legend([p1, p2], {data1Name,data2Name}, 'Orientation','vertical'); 
-
-end    
+    
 
