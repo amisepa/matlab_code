@@ -143,7 +143,7 @@ if ~isequal(nvox, nvox2)
     error('There must be the same number of vertices/voxels in the leadfield and source model');
 end
 if isempty(g.chansel)
-    g.chansel = [1:EEG.nbchan];
+    g.chansel = 1:EEG.nbchan;
 else
     g.chansel = eeg_decodechan(EEG.chanlocs, g.chansel);
 end
@@ -158,22 +158,24 @@ frqs = sfreqs(fres, EEG.srate);
 
 % common average reference transform
 nbchan = length(g.chansel);
-% H = eye(nbchan) - ones(nbchan) ./ nbchan;
-% tmpdata = reshape(H*EEG.data(g.chansel, :), nbchan, EEG.pnts, EEG.trials);
-% leadfield = reshape(H*leadfield(:, :), nbchan, nvox, 3);
-tmpdata = reshape(EEG.data(g.chansel, :), nbchan, EEG.pnts, EEG.trials);
-leadfield = reshape(leadfield(:, :), nbchan, nvox, 3);
+H = eye(nbchan) - ones(nbchan) ./ nbchan;
+tmpdata = reshape(H*EEG.data(g.chansel, :), nbchan, EEG.pnts, EEG.trials);
+leadfield = reshape(H*leadfield(:, :), nbchan, nvox, 3);
+% tmpdata = reshape(EEG.data(g.chansel, :), nbchan, EEG.pnts, EEG.trials);
+% leadfield = reshape(leadfield(:, :), nbchan, nvox, 3);
 
 %% source reconstruction
 
 if strcmpi(g.model, 'eLoreta')
     % eLORETA inverse projection kernel
-    disp('Computing eLoreta...');
+    disp('Performing source-reconstruction using eLoreta...');
     P_eloreta = mkfilt_eloreta_v2(leadfield, g.modelparams{:});
     
     % project to source space
     source_voxel_data = reshape(tmpdata(:, :)'*P_eloreta(:, :), EEG.pnts*EEG.trials, nvox, 3);
+    
 elseif strcmpi(g.model, 'LCMV')
+    disp('Performing source-reconstruction using LCMV...');
     C = cov(tmpdata(:, :)');
     if length(g.modelparams) == 1
         lcmv_reg = g.modelparams{1};
@@ -184,42 +186,45 @@ elseif strcmpi(g.model, 'LCMV')
     source_voxel_data = reshape(tmpdata(:, :)'*P_eloreta(:, :), EEG.pnts*EEG.trials, nvox, 3);
     source_voxel_data = 10^3*source_voxel_data; % the units are nA*m
 else
-    % transform the data to continuous so we can get an estimate for each sample
-    EEG2 = EEG;
-    EEG2.data = EEG2.data(:,:);
-    EEG2.pnts = size(EEG2.data,2);
-    EEG2.trials = 1;
-    EEG2 = eeg_checkset(EEG2);
-    dataPre = eeglab2fieldtrip(EEG2, 'preprocessing', 'dipfit');  
-    
-    % prepare data
-    cfg = [];
-    cfg.channel = {'all', '-EOG1'};
-    cfg.reref = 'yes';
-    cfg.refchannel = {'all', '-EOG1'};
-    dataPre = ft_preprocessing(cfg, dataPre);
 
-    % load head model and prepare leadfield matrix
-    vol = load('-mat', g.headmodel);
+    error('select LCMV or eLoreta')
 
-    % source reconstruction
-    cfg             = [];
-    if lower(g.model(1)) == 'e'
-        cfg.method      = 'eLoreta';
-    else
-        cfg.method      = 'lcmv';
-    end
-    try
-        cfg.(g.sourcemethod) = struct(g.modelparams{:});
-    catch, end
-    cfg.sourcemodel = oldLeadfield;
-    cfg.headmodel   = vol.vol;
-    cfg.keeptrials  = 'yes';
-    source          = ft_sourceanalysis(cfg, dataPre);  % compute the source
-    
-    % reformat for ROI analysis below
-    source_voxel_data = reshape([ source.avg.mom{:} ], 3, size(source.avg.mom{1},2), length(source.avg.mom));
-    source_voxel_data = permute(source_voxel_data, [2 3 1]);
+    % % transform the data to continuous so we can get an estimate for each sample
+    % EEG2 = EEG;
+    % EEG2.data = EEG2.data(:,:);
+    % EEG2.pnts = size(EEG2.data,2);
+    % EEG2.trials = 1;
+    % EEG2 = eeg_checkset(EEG2);
+    % dataPre = eeglab2fieldtrip(EEG2, 'preprocessing', 'dipfit');  
+    % 
+    % % prepare data
+    % cfg = [];
+    % cfg.channel = {'all', '-EOG1'};
+    % cfg.reref = 'yes';
+    % cfg.refchannel = {'all', '-EOG1'};
+    % dataPre = ft_preprocessing(cfg, dataPre);
+    % 
+    % % load head model and prepare leadfield matrix
+    % vol = load('-mat', g.headmodel);
+    % 
+    % % source reconstruction
+    % cfg             = [];
+    % if lower(g.model(1)) == 'e'
+    %     cfg.method      = 'eLoreta';
+    % else
+    %     cfg.method      = 'lcmv';
+    % end
+    % try
+    %     cfg.(g.sourcemethod) = struct(g.modelparams{:});
+    % catch, end
+    % cfg.sourcemodel = oldLeadfield;
+    % cfg.headmodel   = vol.vol;
+    % cfg.keeptrials  = 'yes';
+    % source          = ft_sourceanalysis(cfg, dataPre);  % compute the source
+    % 
+    % % reformat for ROI analysis below
+    % source_voxel_data = reshape([ source.avg.mom{:} ], 3, size(source.avg.mom{1},2), length(source.avg.mom));
+    % source_voxel_data = permute(source_voxel_data, [2 3 1]);
 end
     
 % ROI labels
@@ -248,10 +253,10 @@ if strcmpi(g.roiactivity, 'on')
     end
     
     % compute power using the Welch method on continuous data
-    fprintf('Computing PSD for %g voxels... \n', size(source_voxel_data,2));
+    fprintf('Computing power spectral density (PSD) for %g voxels... \n', size(source_voxel_data,2));
     tmpWelch = pwelch(tmpData(:,:), data_pnts, floor(data_pnts/2), data_pnts, EEG.srate); % ftmp should be equal frqs 
 
-    % Convert back to epoched data and remove 4th dim (PCA?)
+    % Convert back to epoched data and average on 4th dim (XYZ?)
     tmpWelch = reshape(tmpWelch, size(tmpWelch,1), EEG.trials, size(source_voxel_data,2), size(source_voxel_data,3));
     % tmpWelch = squeeze(mean(tmpWelch,2)); % remove trials size freqs x voxels x 3
     tmpWelch = squeeze(mean(tmpWelch,4)); % remove 3rd dim size freqs x voxels
@@ -268,12 +273,14 @@ if strcmpi(g.roiactivity, 'on')
     nROI  = length(cortex.Atlas.Scouts);
     nPCAs = zeros(1, nROI);
     nEpochs = EEG.trials;
-    fprintf('Get average PSD for %g ROIs... \n', nROI)
+
+    % Average power for each brain region
+    fprintf('Getting average PSD for %g ROIs to get mean power by brain regions... \n', nROI)
     source_roi_power = zeros(nfreq,nEpochs,nROI);
     for iROI = 1:nROI
         ind_roi = cortex.Atlas.Scouts(iROI).Vertices;
         [~, source_roi_power_norm(iROI)] = roi_getpower(source_voxel_data, ind_roi); 
-        source_roi_power(:,:,iROI) = mean(tmpWelch(:, :, ind_roi),3); 
+        source_roi_power(:,:,iROI) = trimmean(tmpWelch(:, :, ind_roi),10,3);  % 10% trimmed mean
         
         [source_roi_data_tmp, nPCAs(iROI)] = roi_getact(source_voxel_data, ind_roi, g.nPCA);
         source_roi_data = cat(2, source_roi_data, source_roi_data_tmp);

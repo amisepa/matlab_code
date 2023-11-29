@@ -25,7 +25,8 @@ badSNR = isoutlier(sig_snr,method);
 badTrials = unique([find(badRMS) find(badSNR)]);
 
 if vis
-    eegplot(EEG.data(:,:,badTrials),'srate',EEG.srate,'events',EEG.event,'spacing',50);
+    eegplot(EEG.data(:,:,badTrials),'srate',EEG.srate,'events',EEG.event, ...
+        'spacing',80,'title','Bad epochs removed','plottitle','Bad epochs removed');
 end
 
 fprintf('Trials detected: %g \n', length(badTrials));
