@@ -14,10 +14,10 @@
 %               to plot significance bars at the bottom. Should be the size of xAxis 
 % 
 % USAGE:
-%   plotHDI(xAxis, data1, data2, estimator, grp, a, h, data1Name, data2Name)
+%   plotHDI(xAxis,data1,data2,estimator,a,h,data1Name,data2Name)
 % 
 % EXAMPLE:
-%   plotHDI(freqs, data1, data2, 'trimmed mean', 'dpt', .05, h, 'condition1', 'condition2'); 
+%   plotHDI(freqs,data1,data2,'trimmed mean',.05,h,'condition1','condition2'); 
 % 
 % Cedric Cannard 2021
 
