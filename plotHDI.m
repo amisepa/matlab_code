@@ -79,17 +79,18 @@ ylabel('Difference','FontSize',11,'FontWeight','bold')
 % title(sprintf('Difference (%s + 95% HDI)',method)); 
 
 % Plot significance bar at the bottom
-if isempty(h)
-    for i = 1:length(xAxis)
-        if HDI3(1,i)<0 && HDI3(2,i)<0 || HDI3(1,i)>0 && HDI3(2,i)>0
-            h(i) = true;
-        else
-            h(i) = false;
-        end
-    end
+% if isempty(h)
+%     for i = 1:length(xAxis)
+%         if HDI3(1,i)<0 && HDI3(2,i)<0 || HDI3(1,i)>0 && HDI3(2,i)>0
+%             h(i) = true;
+%         else
+%             h(i) = false;
+%         end
+%     end
+% end
+if ~isempty(h)
+    plotSigBar(h, xAxis);
 end
-plotSigBar(h, xAxis);
-
 legend([p1, p2], {data1Name,data2Name}, 'Orientation','vertical'); 
 set(findall(gcf,'type','axes'),'fontSize',11,'fontweight','bold');
 

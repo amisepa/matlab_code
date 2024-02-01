@@ -24,8 +24,6 @@ for iElec = 1:nElecs
         error('Several electrodes with th esam elabel were found in the BEM coordinate template. There should be just one.')
     end
 
-    idx
-
 
 end
 
