@@ -45,6 +45,7 @@ winSize = fs*winLength;  % in samples
 % Taper method: hamming (default), hann, blackman, rectwin.
 taperM = 'hamming'; 
 fh = str2func(taperM);
+win = fh(winSize);  % window
 
 % Overlap
 if ~exist('overlap', 'var') || isempty(overlap)
@@ -74,7 +75,7 @@ fprintf('Estimating %s on frequencies %g-%g Hz using %s-tapered %g-s long window
 % Power spectral density (PSD)
 nChan = size(data,1);
 parfor iChan = 1:nChan
-    [pwr(iChan,:), f(iChan,:)] = pwelch(data(iChan,:),fh(winSize),noverlap,nfft,fs,type);
+    [pwr(iChan,:), f(iChan,:)] = pwelch(data(iChan,:),win,noverlap,nfft,fs,type);
     % [pwr(iChan,:), f] = pwelch(data(iChan,:),winSize,[],[],fs,type);
 end
 f = f(1,:);
@@ -94,17 +95,18 @@ pwr_norm = 10*log10(pwr);
 if vis
     figure('color','w');
 
-    subplot(2,1,1)
-    for iChan = 1:nChan
-        plot(f,pwr(iChan,:)); hold on;
-    end
-    title('Power spectral density (PSD)'); ylabel('µV^2/Hz')
-    box on; grid on; axis tight
+    % subplot(2,1,1)
+    % for iChan = 1:nChan
+    %     plot(f,pwr(iChan,:),'LineWidth',1); hold on;
+    % end
+    % title('Power spectral density'); ylabel('µV^2/Hz'); 
+    % box on; axis tight
 
-    subplot(2,1,2)
+    % subplot(2,1,2)
     for iChan = 1:nChan
         plot(f,pwr_norm(iChan,:)); hold on;
     end
     title('Power spectral density (normalized)'); ylabel('dB (10*log10(µV^2/Hz)')
+    xlabel("Frequency (Hz)")
     box on; grid on; axis tight
 end

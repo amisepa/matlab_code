@@ -20,15 +20,15 @@ function superscroll_obj = example_scroll
     set(refax,'xlim',[0 80],'ylim',[-1 2]);
 
     
-    %make an X axis and Y axis scroll bar
+    % make an X axis and Y axis scroll bar
     axeslist = {'X','Y'};
-    superscroll_obj=superscroll(refax,axeslist);
+    superscroll_obj = superscroll(refax,axeslist);
     
     %build scrollbar, add keypress and resize functions
     autoscrollbar(superscroll_obj,ploh);
     
     %make one scroll bar yellow
-    yellow(superscroll_obj.axdyn(1));
+    % yellow(superscroll_obj.axdyn(1));
     
     
     title(refax,'pan and zoom using arrow keys, shift and control')

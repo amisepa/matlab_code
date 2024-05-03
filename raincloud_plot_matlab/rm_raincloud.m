@@ -155,6 +155,11 @@ set(gca, 'YTick', fliplr(ks_offsets));
 
 set(gca, 'YTickLabel', n_plots_per_series:-1:1);
 
+% set(gca, 'XTick', [], 'XTickLabel', []);
+set(gca, 'YTick', [], 'YTickLabel', []);
+% set(get(gca, 'XAxis'), 'Visible', 'off');
+set(get(gca, 'YAxis'), 'Visible', 'off');
+
 %% determine plot rotation
 % default option is left-to-right
 % plot_top_to_bottom can be set to 1 
@@ -163,7 +168,7 @@ set(gca, 'YTickLabel', n_plots_per_series:-1:1);
 % logical is constructed the way it is.
 
 % rotate and flip
-if ~plot_top_to_bottom
-    view([90 -90]);
-    axis ij
-end
+% if ~plot_top_to_bottom
+%     view([90 -90]);
+%     axis ij
+% end
