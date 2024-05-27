@@ -184,9 +184,9 @@ for i = 1:length(neighbors)
   k = k + length(neighbors(i).neighblabel);
 end
 if k==0
-  warning('No neighbouring channels were specified or found');
+  warning('No neighboring channels were specified or found');
 else
-  fprintf('there are on average %.1f neighbors per channel\n', k/length(neighbors));
+  fprintf('Average number of neighors per channel: %.1f \n', k/length(neighbors));
 end
 
 % Visualisation
