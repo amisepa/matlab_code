@@ -5,8 +5,8 @@
 % windows and avoid edge artifacts.
 % 
 % Usage:
-% [pwr, pwr_norm, f] = get_psd(data,fs,overlap,fRange,vis)
-% [pwr, pwr_norm, f] = get_psd(EEG.data,EEG.srate,.5,[1 100],4,1);
+% [pwr, pwr_norm, f] = compute_pwr(data,fs,overlap,fRange,vis)
+% [pwr, pwr_norm, f] = compute_pwr(EEG.data,EEG.srate,.5,[1 100],4,1);
 % 
 % Inputs:
 %   EEG data    - channels x frames or channels x frames x epochs
@@ -18,7 +18,7 @@
 % 
 % Copyright (C) - Cedric Cannard, 2021
 
-function [pwr, pwr_norm, f] = get_psd(data,fs,overlap,fRange,winLength,vis)
+function [pwr, pwr_norm, f] = compute_pwr(data,fs,overlap,fRange,winLength,vis)
 
 % Sampling rate
 if ~exist('fs', 'var') || isempty(fs)
@@ -74,7 +74,7 @@ fprintf('Estimating %s on frequencies %g-%g Hz using %s-tapered %g-s long window
 
 % Power spectral density (PSD)
 nChan = size(data,1);
-parfor iChan = 1:nChan
+for iChan = 1:nChan
     [pwr(iChan,:), f(iChan,:)] = pwelch(data(iChan,:),win,noverlap,nfft,fs,type);
     % [pwr(iChan,:), f] = pwelch(data(iChan,:),winSize,[],[],fs,type);
 end
