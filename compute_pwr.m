@@ -74,7 +74,7 @@ fprintf('Estimating %s on frequencies %g-%g Hz using %s-tapered %g-s long window
 
 % Power spectral density (PSD)
 nChan = size(data,1);
-for iChan = 1:nChan
+parfor iChan = 1:nChan
     [pwr(iChan,:), f(iChan,:)] = pwelch(data(iChan,:),win,noverlap,nfft,fs,type);
     % [pwr(iChan,:), f] = pwelch(data(iChan,:),winSize,[],[],fs,type);
 end

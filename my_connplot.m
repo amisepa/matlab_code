@@ -107,7 +107,7 @@ if ~strcmpi(g.brainimg, 'off')
     end
 end
 if strcmpi(g.brainimg, 'off')
-    plotImg = false;
+    % plotImg = false;
     anglesInit = linspace(0,2*pi,size(array,1)+1) + pi/size(array,1);
     x = sin(anglesInit)*radius;
     y = cos(anglesInit)*radius;
