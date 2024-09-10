@@ -98,7 +98,8 @@ jit_width = spacing / 8;
 
 % TO-DO: This should probably not be hardcoded either...
 % Although it can be overridden later
-raindrop_size = 100;
+% raindrop_size = 100;
+raindrop_size = 15;
 
 for i = 1:n_plots_per_series
     for j = 1:n_series

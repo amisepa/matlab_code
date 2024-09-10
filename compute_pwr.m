@@ -5,7 +5,7 @@
 % windows and avoid edge artifacts.
 % 
 % Usage:
-% [pwr, pwr_norm, f] = compute_pwr(data,fs,overlap,fRange,vis)
+% [pwr, pwr_norm, f] = compute_pwr(data,fs,overlap,fRange,winLength,vis)
 % [pwr, pwr_norm, f] = compute_pwr(EEG.data,EEG.srate,.5,[1 100],4,1);
 % 
 % Inputs:
@@ -13,7 +13,7 @@
 %   fs          - sampling frequency
 %   overlap     - overlapped segment averaging, e.g., .5 for 50% overlap (default)
 %   freqRange   - frequency range to output, e.g. [1 100] (default)
-%   winLength  - window length in s (default = 4)
+%   winLength  - window length in s (default = 2)
 %   vis         - visualize (true) or not (false)
 % 
 % Copyright (C) - Cedric Cannard, 2021
@@ -38,7 +38,7 @@ end
 
 % Window size
 if ~exist('winLength','var')
-    winLength = 4;   % 4-s window by default
+    winLength = 2;   % 2-s window by default
 end
 winSize = fs*winLength;  % in samples
 
@@ -55,7 +55,7 @@ noverlap = floor(overlap*winSize); % convert overlap ratio to samples
 
 % Frequency range default
 if ~exist('fRange', 'var') || isempty(fRange)
-    nyquist = fs/2;
+    nyquist = fs/2-1;
     fRange = [1/nyquist nyquist]; 
 end
 
@@ -95,18 +95,14 @@ pwr_norm = 10*log10(pwr);
 if vis
     figure('color','w');
 
-    % subplot(2,1,1)
-    % for iChan = 1:nChan
-    %     plot(f,pwr(iChan,:),'LineWidth',1); hold on;
-    % end
-    % title('Power spectral density'); ylabel('µV^2/Hz'); 
-    % box on; axis tight
+    subplot(2,1,1)
+    plot(f,pwr,'LineWidth',1); hold on
+    title('Power spectral density'); ylabel('Power (µV^2/Hz)'); 
+    box on; axis tight
 
-    % subplot(2,1,2)
-    for iChan = 1:nChan
-        plot(f,pwr_norm(iChan,:)); hold on;
-    end
-    title('Power spectral density (normalized)'); ylabel('dB (10*log10(µV^2/Hz)')
+    subplot(2,1,2)
+    plot(f,pwr_norm); hold on
+    ylabel('Power in decibels (10*log10(µV^2/Hz)')
     xlabel("Frequency (Hz)")
-    box on; grid on; axis tight
+    box on; axis tight
 end
