@@ -1,0 +1,138 @@
+function [clean_signal, clean_time] = plot_cleaned_signal(time, signal, clean_sing bad_mask, chan_labels, asr_mode, vis_asr, max_fraction_bad, sig_clean)
+
+% PLOT_CLEANED_SIGNAL: Visualize and optionally remove/reconstruct signal segments
+%
+% Inputs:
+%   time        - Time vector [1 x N]
+%   signal      - Signal matrix [channels x N]
+%   bad_mask    - Logical matrix [samples x channels]
+%   chan_labels - Cell array of channel labels
+%   asr_mode    - 'reconstruct' or 'remove'
+%   vis_asr     - true/false (whether to plot)
+%   max_fraction_bad - maximum tolerated fraction of channels marked bad (for remove mode)
+%   sig_clean   - (optional) reconstructed signal from ASR, [channels x N]
+%
+% Outputs:
+%   clean_signal - Cleaned signal [channels x kept_samples] (only if remove)
+%   clean_time   - Corresponding time vector (only if remove)
+
+if nargin < 7 || isempty(max_fraction_bad)
+    max_fraction_bad = 0.5;
+end
+if nargin < 8
+    sig_clean = [];
+end
+
+if size(bad_mask, 1) ~= length(time)
+    bad_mask = bad_mask';  % ensure [samples x channels]
+end
+
+signal = double(signal);  % ensure numeric
+[num_chans, num_samples] = size(signal);
+clean_signal = signal;
+clean_time = time;
+
+% Normalize signal for visual comparison
+signal = (signal - mean(signal, 2, 'omitnan')) ./ std(signal, 0, 2, 'omitnan');
+if ~isempty(sig_clean)
+    sig_clean = (sig_clean - mean(sig_clean, 2, 'omitnan')) ./ std(sig_clean, 0, 2, 'omitnan');
+end
+offset_step = 3;  % fixed vertical spacing
+
+if strcmpi(asr_mode, 'reconstruct')
+    if vis_asr
+        figure('color','w'); hold on
+
+        for iChan = 1:num_chans
+            time_i = time(:)';
+            offset = (num_chans - iChan) * offset_step;
+
+            % Plot reconstructed signal (ASR output)
+            recon_trace = sig_clean(iChan,:) + offset;
+            scrollplot({time_i, recon_trace, 'color', '#0072BD'}, {'X'}, 15);
+
+            % Plot raw data (red) only where marked bad
+            bad_idx = find(bad_mask(:, iChan));
+            if ~isempty(bad_idx)
+                diffs = diff(bad_idx) > 1;
+                breaks = [true, diffs(:).', true];
+                edges = find(breaks);
+                for s = 1:(length(edges) - 1)
+                    segment = bad_idx(edges(s):(edges(s+1)-1));
+                    seg_x = [time_i(segment), NaN];
+                    seg_y = [signal(iChan, segment) + offset, NaN];
+                    scrollplot({seg_x, seg_y, 'color', 'r'}, {'X'}, 15);
+                end
+            end
+        end
+
+        yticks((0:num_chans-1) * offset_step);
+        yticklabels(flip(chan_labels(:)));
+        ylim([-1 offset_step * num_chans]);
+        title('Signal Cleaning Overview');
+    end
+
+elseif strcmpi(asr_mode, 'remove')
+    % Identify samples to keep based on fraction of bad channels
+    keep_idx = sum(bad_mask, 2) <= max_fraction_bad * size(bad_mask, 2);
+
+    if vis_asr
+        figure('color','w'); hold on
+        bad_all_x = {};
+        bad_all_y = {};
+        clean_all_x = {};
+        clean_all_y = {};
+
+        for iChan = 1:num_chans
+            signal_i = signal(iChan, :);
+            time_i = time(:)';
+            offset = (num_chans - iChan) * offset_step;
+
+            % Separate bad and good points
+            bad_idx = find(bad_mask(:, iChan));
+            good_idx = ~bad_mask(:, iChan);
+
+            % Store clean segment (with offset)
+            clean_trace = nan(1, length(signal_i));
+            clean_trace(good_idx) = signal_i(good_idx) + offset;
+            clean_all_x{end+1} = time_i;
+            clean_all_y{end+1} = clean_trace;
+
+            % Store red (bad) segments with breaks
+            if ~isempty(bad_idx)
+                diffs = diff(bad_idx) > 1;
+                breaks = [true, diffs(:).', true];
+                edges = find(breaks);
+                for s = 1:(length(edges) - 1)
+                    segment = bad_idx(edges(s):(edges(s+1)-1));
+                    bad_all_x{end+1} = [time_i(segment), NaN];
+                    bad_all_y{end+1} = [signal_i(segment) + offset, NaN];
+                end
+            end
+        end
+
+        % Concatenate data across channels
+        clean_all_x = horzcat(clean_all_x{:});
+        clean_all_y = horzcat(clean_all_y{:});
+        bad_all_x = horzcat(bad_all_x{:});
+        bad_all_y = horzcat(bad_all_y{:});
+
+        % Plot clean and bad segments
+        scrollplot({clean_all_x(:), clean_all_y(:), 'color', '#0072BD'}, {'X'}, 15);
+        if ~isempty(bad_all_x)
+            scrollplot({bad_all_x(:), bad_all_y(:), 'color', 'r'}, {'X'}, 15);
+        end
+
+        % Y-axis annotation
+        yticks((0:num_chans-1) * offset_step);
+        yticklabels(flip(chan_labels(:)));
+        ylim([-1 offset_step * num_chans]);
+        title('Signal Cleaning Overview');
+    end
+
+    % Return cleaned signal and time
+    clean_signal = signal(:, keep_idx');
+    clean_time = time(keep_idx');
+else
+    error('Unsupported asr_mode. Use ''reconstruct'' or ''remove''.');
+end

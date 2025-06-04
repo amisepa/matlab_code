@@ -1,4 +1,4 @@
-function EEG = clean_eeg(EEG,thresh,baseline,vis)
+function EEG = my_clean_eeg(EEG,thresh,baseline,vis)
 
 if isfield(EEG.etc,'clean_sample_mask')
     EEG.etc = rmfield(EEG.etc,'clean_sample_mask');

@@ -1,4 +1,4 @@
-%% get_coherence
+%% get_fft
 % Compute power spectrum on each sliding window using fft.
 %  
 % Inputs:
