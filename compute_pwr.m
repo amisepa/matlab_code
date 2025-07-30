@@ -1,12 +1,12 @@
 %% Compute power spectrum for each channel available in data.
 % 
 % EXAMPLE: 
-%   [pwr, pwr_norm, psd, psd_norm, f, pwr_seg, psd_seg] = compute_pwr(data, fs, overlap, fRange, winLength, coherence,vis)
+%   [pwr, pwr_norm, psd, psd_norm, f, pwr_seg, psd_seg] = compute_pwr(data, fs, overlap, fRange, winLength, comp_coherence, vis1, vis2)
 %   [pwr, pwr_norm, psd, psd_norm, f, pwr_seg, psd_seg] = compute_pwr(EEG.data, EEG.srate, .5, [1 100], 2, true, true)
 % 
 % Copyright (C) - Cedric Cannard, 2024
 
-function [pwr, pwr_norm, psd, psd_norm, f, psd_seg, t_seg, coh_seg, pcoh_seg, gpdc_seg, coh_f] = compute_pwr(data, fs, overlap, fRange, winLength, coherence, vis)
+function [pwr, pwr_norm, psd, psd_norm, f, psd_seg, t_seg, coh_seg, pcoh_seg, gpdc_seg, coh_f] = compute_pwr(data, fs, overlap, fRange, winLength, comp_coherence, vis1, vis2)
 
 coh_seg = [];
 pcoh_seg = [];
@@ -59,11 +59,12 @@ end
 
 % nfft
 if ~exist('nfft', 'var') 
-    nfft = winSize*2;  % Number of FFT points
+    % nfft = 2^nextpow2(winSize);  % Round up to nearest power of 2 (best for visualizations)
+    nfft = winSize;  % true frequency resolution (most accurate)
 end
 
 % Su
-if coherence
+if comp_coherence
     Su = eye(nChan, nChan);
 end
 
@@ -77,12 +78,12 @@ seg_end_time = seg_end_idx / fs;            % Convert to seconds
 % Perform FFT and calculate PSD for each windowed segment across all channels
 psd_seg = nan(nChan, floor(nfft / 2) + 1, nSegments);
 pwr_seg = nan(nChan, floor(nfft / 2) + 1, nSegments);
-coh_seg = nan(nChan, nChan, nfft, nSegments);
-pcoh_seg = nan(nChan, nChan, nfft, nSegments);
-gpdc_seg = nan(nChan, nChan, nfft, nSegments);
-if ~coherence
+if ~comp_coherence
     progressbar('Computing spectral power over sliding windows')
 else
+    coh_seg = nan(nChan, nChan, nfft, nSegments);
+    pcoh_seg = nan(nChan, nChan, nfft, nSegments);
+    gpdc_seg = nan(nChan, nChan, nfft, nSegments);
     progressbar('Computing spectral power  + coherence over sliding windows')
 end
 for iSeg = 1:nSegments
@@ -98,7 +99,7 @@ for iSeg = 1:nSegments
     psd_seg(:, :, iSeg) = (1 / (fs * winSize)) * abs(Y(:, 1:floor(nfft/2) + 1)).^2; % power spectral density
     pwr_seg(:, :, iSeg) = abs(Y(:, 1:floor(nfft/2) + 1)).^2;
 
-    if coherence
+    if comp_coherence
         [dc, dtf, pdc, gpdc, ~, coh, pcoh, ~, ~, ~, ~, coh_f] = fdMVAR_5order(segment, Su, nfft, fs);
         coh_seg(:,:,:,iSeg) = abs(coh);     % Coherence between two signals at each frequency
         pcoh_seg(:,:,:,iSeg) = abs(pcoh);   % Partial Coherence (after removing the influence of all other signals, isolating unique shared variance)
@@ -124,7 +125,7 @@ psd_seg = psd_seg(:,freq_idx,:);
 % pwr_seg = pwr_seg(:, mask);
 
 % Same for coherence data
-if coherence
+if comp_coherence
     freq_idx = coh_f >= fRange(1) & coh_f <= fRange(2);
     if coh_f(freq_idx(1)) == 0, freq_idx(1) = []; end
     coh_f = coh_f(freq_idx);
@@ -142,7 +143,7 @@ pwr_norm = 10 * log10(pwr);
 % psd_seg = 10*log10(psd_seg);
 
 % Visualize results
-if vis
+if vis1
     figure('color', 'w');
 
     % % FFT power
@@ -178,6 +179,49 @@ if vis
     box on; axis tight
 
     set(findall(gcf,'type','axes'),'FontSize',10,'FontWeight','normal');
+end
+
+% Plot PSD over time in each band
+if vis2
+    figure('color','w')
+
+    subplot(4,1,1); hold on
+    idx = f<=3;  % delta
+    data = squeeze(trimmean(trimmean(psd_seg(:,idx,:),20,2),20,1));
+    plot(t_seg, data, '.' )
+    plot(t_seg, smooth(data, 30), 'LineWidth',2)
+    title("Delta")
+
+    subplot(4,1,2); hold on
+    idx = f>3 & f<8; % theta
+    data = squeeze(trimmean(trimmean(psd_seg(:,idx,:),20,2),20,1));
+    plot(t_seg, data, '.' )
+    plot(t_seg, smooth(data, 30), 'LineWidth',2)
+    title("Theta")
+
+    subplot(4,1,3); hold on
+    idx = f>=8 & f<13; % alpha
+    data = squeeze(trimmean(trimmean(psd_seg(:,idx,:),20,2),20,1));
+    plot(t_seg, data, '.' )
+    plot(t_seg, smooth(data, 30), 'LineWidth',2)
+    title("Alpha")
+
+    subplot(4,1,4); hold on
+    idx = f>=13 & f<30; % beta
+    data = squeeze(trimmean(trimmean(psd_seg(:,idx,:),20,2),20,1));
+    plot(t_seg, data, '.' )
+    plot(t_seg, smooth(data, 30), 'LineWidth',2)
+    title("Beta")
+
+    % if find(f, 1, 'last' ) > 30
+    %     idx = f>30; % gamma
+    %     data = squeeze(trimmean(trimmean(psd_seg(:,idx,:),20,2),20,1));
+    %     figure; hold on
+    %     plot(t_seg, data, '.' )
+    %     plot(t_seg, smooth(data, 30), 'LineWidth',2)
+    %     title("Gamma")
+    % end
+
 end
 
 
