@@ -2,7 +2,7 @@
 % 
 % EXAMPLE: 
 %   [pwr, pwr_norm, psd, psd_norm, f, pwr_seg, psd_seg] = compute_pwr(data, fs, overlap, fRange, winLength, comp_coherence, vis1, vis2)
-%   [pwr, pwr_norm, psd, psd_norm, f, pwr_seg, psd_seg] = compute_pwr(EEG.data, EEG.srate, .5, [1 100], 2, true, true)
+%   [pwr, pwr_norm, psd, psd_norm, f, pwr_seg, psd_seg] = compute_pwr(EEG.data, EEG.srate, .5, [1 100], 2, false, true, true)
 % 
 % Copyright (C) - Cedric Cannard, 2024
 
