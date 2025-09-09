@@ -1,4 +1,4 @@
-function EEG = apply_car(EEG)
+function EEG = apply_car(EEG, refLabel)
 % apply_car - Common average reference with rank preservation
 %
 %   This method adds a zero-filled surrogate reference channel,

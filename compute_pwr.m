@@ -194,7 +194,8 @@ if opts.comp_coherence
     coh_seg  = nan(nChan, nChan, Kc, nSeg);
     pcoh_seg = nan(nChan, nChan, Kc, nSeg);
     gpdc_seg = nan(nChan, nChan, Kc, nSeg);
-    if opts.progress, progressbar('Computing coherence'); end
+    % if opts.progress, progressbar('Computing coherence'); end
+    if opts.progress, progressbar(0, nSeg); end
     Su = eye(nChan);
     for iSeg = 1:nSeg
         idx = segIdx(iSeg):(segIdx(iSeg)+winSize-1);
@@ -216,7 +217,8 @@ if opts.comp_coherence
         pcoh_seg(:,:,:,iSeg) = abs(pcoh);
         gpdc_seg(:,:,:,iSeg) = abs(gpdc);
         if iSeg == 1, coh_f = cf(:).'; end
-        if opts.progress, progressbar(iSeg/nSeg); end
+        % if opts.progress, progressbar(iSeg/nSeg); end
+        if opts.progress, progressbar(iSeg, nSeg); end
     end
     if ~isempty(coh_f)
         cmask   = coh_f >= opts.fRange(1) & coh_f <= opts.fRange(2);
@@ -331,7 +333,8 @@ else
     tapers = hamming(winSize);             % [winSize x 1]
 end
 
-if opts.progress, progressbar(sprintf('PSD %s', method)); end
+% if opts.progress, progressbar(sprintf('PSD %s', method)); end
+if opts.progress, progressbar(0, nSeg); end
 for iSeg = 1:nSeg
     idx          = segIdx(iSeg):(segIdx(iSeg)+winSize-1);
     t_ends(iSeg) = idx(end)/fsL;
@@ -392,7 +395,8 @@ for iSeg = 1:nSeg
     Sxx_seg(:,:,iSeg) = Sxx;              % µV^2/Hz if input is µV
     Pbin_seg(:,:,iSeg)= Sxx * df;         % per-bin power, µV^2
 
-    if opts.progress, progressbar(iSeg/nSeg); end
+    % if opts.progress, progressbar(iSeg/nSeg); end
+    if opts.progress, progressbar(iSeg, nSeg); end
 end
 end
 
